@@ -31,7 +31,7 @@ export const authOptions: AuthOptions = {
 
                 const user = await prisma.user.findUnique({
                     where: {
-                        email: credentials?.email
+                        email: credentials.email
                     }
                 })
 
@@ -56,4 +56,4 @@ export const authOptions: AuthOptions = {
 
 const handler = NextAuth(authOptions)
 
-export { handler as GetAnimationsOptions, handler as POST };
+export { handler as GET, handler as POST };

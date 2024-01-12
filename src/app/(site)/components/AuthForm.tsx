@@ -7,6 +7,9 @@ import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
 import { AuthSocialButtons } from "./AuthSocialButtons";
 import { BsGithub, BsGoogle } from "react-icons/bs";
 import axios from "axios";
+import toast from "react-hot-toast";
+import { signIn } from "next-auth/react";
+
 type Variant = "LOGIN" | "REGISTER";
 
 export const AuthForm = () => {
@@ -38,15 +41,41 @@ export const AuthForm = () => {
 
     if (variant === "REGISTER") {
       // Axios Register
-      axios.post('/api/register',data)
+      axios.post('/api/register', data).catch(() => {
+        toast.dismiss()
+        toast.error('Something went wrong')
+      }).finally(() => setIsLoading(false))
     }
     if (variant === "LOGIN") {
       // Axios Login
+      signIn('credentials', { ...data, redirect: false }).then((callback) => {
+        if (callback?.error) {
+          toast.dismiss()
+          toast.error('Invalid credentials')
+        }
+
+        if (callback?.ok && !callback?.error) {
+          toast.dismiss()
+          toast.success("Logged In!")
+        }
+      }).finally(() => setIsLoading(false))
     }
   }
 
   const socialActions = (action: string) => {
     setIsLoading(true)
+
+    signIn(action, { redirect: false }).then((callback) => {
+      if (callback?.error) {
+        toast.dismiss()
+        toast.error('Invalid credentials')
+      }
+
+      if (callback?.ok && !callback?.error) {
+        toast.dismiss()
+        toast.success("Logged In!")
+      }
+    }).finally(() => setIsLoading(false))
   }
   return (
     <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
@@ -55,8 +84,8 @@ export const AuthForm = () => {
           {variant === "REGISTER" && (
             <Input label="Name" placeholder="Enter your Name" id="name" register={register} errors={errors} disabled={IsLoading} />
           )}
-          <Input label="Email Address" placeholder="Enter your Email Address" id="email" register={register} errors={errors} disabled={IsLoading}/>
-          <Input label="Password" placeholder="**********" id="password" type="password" register={register} errors={errors} disabled={IsLoading}/>
+          <Input label="Email Address" placeholder="Enter your Email Address" id="email" register={register} errors={errors} disabled={IsLoading} />
+          <Input label="Password" placeholder="**********" id="password" type="password" register={register} errors={errors} disabled={IsLoading} />
           <div>
             <Button disabled={IsLoading} fullWidth type="submit">{variant === 'LOGIN' ? "Sign in" : "Register"}</Button>
           </div>
@@ -73,15 +102,15 @@ export const AuthForm = () => {
 
           <div className="mt-6 flex gap-2">
             <AuthSocialButtons icon={BsGithub} onClick={() => socialActions('github')} />
-            <AuthSocialButtons icon={BsGoogle}  onClick={() => socialActions('google')}/>
+            <AuthSocialButtons icon={BsGoogle} onClick={() => socialActions('google')} />
           </div>
         </div>
 
         <div className=" flex gap-2 justify-center text-sm mt-6 px-2 text-gray-500">
-            <div>{variant === 'LOGIN' ? 'New to Messenger?' : "Already Have an account?"}</div>
-            <div onClick={toogleVariant} className="underline cursor-pointer">
-{variant === 'LOGIN' ? 'Create an account' : 'Login'}
-            </div>
+          <div>{variant === 'LOGIN' ? 'New to Messenger?' : "Already Have an account?"}</div>
+          <div onClick={toogleVariant} className="underline cursor-pointer">
+            {variant === 'LOGIN' ? 'Create an account' : 'Login'}
+          </div>
         </div>
       </div>
     </div>
