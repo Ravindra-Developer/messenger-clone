@@ -9,6 +9,7 @@ import { Fragment, useMemo, useState } from "react";
 import { IoClose, IoTrash } from "react-icons/io5";
 import ConfirmModal from "./ConfirmModal";
 import AvatarGroup from "@/app/components/AvatarGroup";
+import userActivelist from "@/app/hooks/useActiveList";
 
 interface ProfileDrawerProps {
     isOpen?: boolean;
@@ -29,12 +30,15 @@ const ProfilerDrawer: React.FC<ProfileDrawerProps> = ({ isOpen, data, onClose })
         return data.name || otherUser.name
     }, [data.name, otherUser.name])
 
+    const { members } = userActivelist()
+    const isActive = members.indexOf(otherUser?.email!) !== -1
+
     const statusText = useMemo(() => {
         if (data.isGroup) {
             return `${data.users.length} members`
         }
-        return 'Active'
-    }, [data])
+        return isActive ? "Active" : "offline"
+    }, [data, isActive])
 
     return (
         <>
