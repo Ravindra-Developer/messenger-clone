@@ -25,8 +25,8 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ currentUser, isOpen, onCl
 
     const { register, handleSubmit, watch, setValue, formState: { errors } } = useForm<FieldValues>({
         defaultValues: {
-            name: currentUser.name,
-            image: currentUser.image
+            name: currentUser?.name,
+            image: currentUser?.image
         }
     })
 
@@ -67,7 +67,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ currentUser, isOpen, onCl
                             <div>
                                 <label className="block text-sm font-medium leading-6 text-gray-900" >Photo</label>
                                 <div className="mt-2 flex items-center gap-x-3">
-                                    <Image className="rounded-full" alt="Avatar" src={image || currentUser.image || '/images/placeholder.jpg'} width="48" height="48" />
+                                    <Image className="rounded-full" alt="Avatar" src={image || currentUser?.image || '/images/placeholder.jpg'} width="48" height="48" />
                                     <CldUploadButton options={{ maxFiles: 1 }} onUpload={handleUpload} uploadPreset="fdgk3hcu">
                                         <Button disabled={IsLoading} secondary type="button" >Change</Button>
                                     </CldUploadButton>
